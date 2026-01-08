@@ -80,7 +80,7 @@ class Dashboard extends BaseController
         // User said: "toko saya belum diketahui jumlahnya berapa dari semua platform (kalo zefatex memang cuman 1 aja)"
         $shopeeStores = $this->tokoModel->where('platform', 'shopee')->countAllResults();
         $tiktokStores = $this->tokoModel->where('platform', 'tiktok')->countAllResults();
-        $zefatexStores = 1; // As per requirement
+        $zefatexStores = 1; 
         $totalStores = $shopeeStores + $tiktokStores + $zefatexStores;
 
 
@@ -206,7 +206,7 @@ class Dashboard extends BaseController
         
         return $this->response->setJSON(['success' => false, 'message' => 'File tidak valid']);
     }
-
+    
     public function ganti_password()
     {
         if (!session()->get('isLoggedIn')) {
