@@ -59,6 +59,15 @@
             <span>Pengeluaran</span></a>
     </li>
 
+    <?php if (session()->get('is_master') || session()->get('role') === 'admin'): ?>
+    <!-- Nav Item - Kelola Pengguna -->
+    <li class="nav-item">
+        <a class="nav-link" href="<?= base_url('dashboard/kelola_pengguna') ?>">
+            <i class="fas fa-fw fa-user-cog"></i>
+            <span>Kelola Pengguna</span></a>
+    </li>
+    <?php endif; ?>
+
     <!-- Nav Item - Tables -->
     <li class="nav-item">
         <a class="nav-link" href="<?= base_url('laporan') ?>">
