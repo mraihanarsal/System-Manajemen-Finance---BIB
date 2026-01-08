@@ -1,0 +1,34 @@
+<?php
+$hostname = 'localhost';
+$username = 'root';
+$password = ''; // Default Laragon/XAMPP password
+$database = 'project-bexindoberkat'; // Adjust if actual DB name differs, checking prev logs it seems to be 'project-bexindoberkat' based on folder name but usually DB is just name. I'll check env or assume.
+// Actually, earlier logs showed DB connection. I'll try to include the db config or just run a direct SQL command via `spark` or this script.
+// Let's assume standard local connection.
+// Wait, I should check .env to be safe about DB name.
+// But usually I can just write the migration via Spark?
+// User environment is Windows, I can write a raw PHP script.
+
+// Let's check database name from .env first to be sure?
+// No, I will just use the script I used before for `fix_db_schema.php` as template.
+// It didn't have DB name hardcoded, it likely used `mysqli` with default.
+// Let's use `check_schema.php` pattern.
+
+$mysqli = new mysqli("localhost", "root", "", "db_bexindoberkat"); // Guessing name?
+// Actually, in `debug_db.php` (from history) I might see the DB name.
+// I will try to read `.env` first in a turbo step? No, `read_file` `.env`.
+
+// Let's just try to connect to `db_bexindoberkat` or `project_bexindoberkat`.
+// Actually, I can use CodeIgniter's migration or just a controller method to run SQL.
+// A controller method is safer as it uses the configured DB connection.
+// I'll create a temporary controller method in `ZefatexController` to run the setup!
+
+// Wait, I can't run the controller if I haven't written it yet.
+// I'll write `setup_zefatex.php` in root and try to detect DB or just use `db_bexindoberkat` (common) or `bexindoberkat`.
+// Let's use `php spark migrate:create`? No, simpler to run raw SQL via a known entry point.
+
+// Better idea: Create a Route in `Routes.php` like `zefatex/setup` pointing to `ZefatexController::setup`, 
+// and in `ZefatexController`, I write the `setup` method to run the DDL.
+// That ensures correct DB connection.
+
+?>
