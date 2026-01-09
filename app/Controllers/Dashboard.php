@@ -23,6 +23,10 @@ class Dashboard extends BaseController
 
     public function index()
     {
+        if (!session()->get('isLoggedIn')) {
+            return redirect()->to('/auth/login');
+        }
+
         $currentYear = date('Y');
         $currentMonth = date('m');
 
@@ -113,6 +117,10 @@ class Dashboard extends BaseController
     
     public function profile()
     {
+        if (!session()->get('isLoggedIn')) {
+            return redirect()->to('/auth/login');
+        }
+
         $userData = $this->getUserData();
         $data = [
             'title' => 'Profile',
