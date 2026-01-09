@@ -43,6 +43,17 @@ class UserApi extends ResourceController
             'foto'     => 'undraw_profile_2.svg'
         ];
 
+        // Handle Photo Upload
+        $file = $this->request->getFile('foto');
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            // Validation (manual check or rule? Manual is often easier in controller for optional files)
+            if (strpos($file->getMimeType(), 'image/') === 0 && $file->getSize() <= 2097152) {
+                 $newName = $file->getRandomName();
+                 $file->move(ROOTPATH . 'public/uploads/profiles', $newName);
+                 $data['foto'] = $newName;
+            }
+        }
+
         if ($this->model->insert($data)) {
             return $this->respondCreated(['status' => 'success', 'message' => 'User berhasil ditambahkan']);
         }
@@ -82,6 +93,16 @@ class UserApi extends ResourceController
 
         if (!empty($password)) {
             $data['password'] = password_hash($password, PASSWORD_BCRYPT);
+        }
+
+        // Handle Photo Upload
+        $file = $this->request->getFile('foto');
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            if (strpos($file->getMimeType(), 'image/') === 0 && $file->getSize() <= 2097152) {
+                 $newName = $file->getRandomName();
+                 $file->move(ROOTPATH . 'public/uploads/profiles', $newName);
+                 $data['foto'] = $newName;
+            }
         }
 
         if ($this->model->update($id, $data)) {

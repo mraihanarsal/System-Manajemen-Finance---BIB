@@ -28,7 +28,7 @@
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities">
             <i class="fas fa-fw fa-store"></i>
-            <span>Toko Saya</span>
+            <span>Pemasukan</span>
         </a>
         <div id="collapseUtilities" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">

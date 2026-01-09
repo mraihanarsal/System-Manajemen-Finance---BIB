@@ -42,6 +42,7 @@ $routes->group('pengeluaran', function($routes) {
 });
 $routes->get('/laporan', 'Laporan::index');
 $routes->get('/laporan/getData', 'Laporan::getData');
+$routes->get('/laporan/download_pdf', 'Laporan::generate_pdf');
 
 // ================== TIKTOK ==================
 $routes->get('/tiktok/toko', 'TokoTiktokController::index');

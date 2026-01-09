@@ -1,6 +1,28 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
+
+<!-- HEADER + BREADCRUMB -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="/dashboard" class="text-decoration-none">
+                                <i class="fas fa-dashboard me-1"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Kelola Pengguna</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -31,11 +53,15 @@
                             </td>
                             <td><?= esc($user['nama']) ?></td>
                             <td><?= esc($user['username']) ?></td>
-                            <td>
-                                <span class="badge badge-<?= $user['role'] === 'admin' ? 'warning' : 'info' ?>">
-                                    <?= ucfirst($user['role']) ?>
-                                </span>
-                            </td>
+                                <td>
+                                    <?php 
+                                        $role = !empty($user['role']) ? $user['role'] : 'user';
+                                        $badgeClass = $role === 'admin' ? 'warning' : 'info';
+                                    ?>
+                                    <span class="badge badge-<?= $badgeClass ?>">
+                                        <?= ucfirst($role) ?>
+                                    </span>
+                                </td>
                             <td>
                                 <span class="badge badge-<?= $user['status'] === 'active' ? 'success' : 'danger' ?>">
                                     <?= ucfirst($user['status']) ?>
@@ -89,6 +115,10 @@
                         <input type="password" name="password" class="form-control" required>
                     </div>
                     <div class="form-group">
+                        <label>Foto Profil (Opsional)</label>
+                        <input type="file" name="foto" class="form-control" accept="image/*">
+                    </div>
+                    <div class="form-group">
                         <label>Role</label>
                         <select name="role" class="form-control" required>
                             <option value="user">User</option>
@@ -97,7 +127,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#tambahUserModal').modal('hide')">Batal</button>
                     <button type="submit" class="btn btn-primary">Simpan</button>
                 </div>
             </form>
@@ -113,7 +143,7 @@
                 <input type="hidden" name="id" id="edit_id">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit User</h5>
-                    <button type="button" class="close" data-dismiss="modal">
+                    <button type="button" class="close" data-dismiss="modal" onclick="$('#editUserModal').modal('hide')">
                         <span>&times;</span>
                     </button>
                 </div>
@@ -131,6 +161,10 @@
                         <input type="password" name="password" class="form-control" placeholder="Isi hanya jika ingin mengganti password">
                     </div>
                     <div class="form-group">
+                        <label>Foto Profil (Biarkan kosong jika tidak ingin mengubah)</label>
+                        <input type="file" name="foto" class="form-control" accept="image/*">
+                    </div>
+                    <div class="form-group">
                         <label>Role</label>
                         <select name="role" id="edit_role" class="form-control" required>
                             <option value="user">User</option>
@@ -139,7 +173,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#editUserModal').modal('hide')">Batal</button>
                     <button type="submit" class="btn btn-primary">Update</button>
                 </div>
             </form>
@@ -206,14 +240,16 @@ $(document).ready(function() {
         e.preventDefault();
         const id = $('#edit_id').val();
         
-        // Convert FormData to URLSearchParams for x-www-form-urlencoded
-        const formData = new URLSearchParams(new FormData(this)).toString();
+        // Use FormData for file upload
+        const formData = new FormData(this);
+        formData.append('_method', 'PUT'); // Method spoofing for CI4
 
         $.ajax({
             url: '<?= base_url('api/users') ?>/' + id,
-            type: 'PUT',
+            type: 'POST', // Must be POST for FormData
             data: formData,
-            contentType: 'application/x-www-form-urlencoded',
+            processData: false,
+            contentType: false,
             success: function(response) {
                 $('#editUserModal').modal('hide');
                 Swal.fire({
@@ -230,6 +266,8 @@ $(document).ready(function() {
                 let msg = 'Terjadi kesalahan';
                 if(xhr.responseJSON && xhr.responseJSON.messages) {
                     msg = Object.values(xhr.responseJSON.messages).join('<br>');
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
                 }
                 Swal.fire('Gagal', msg, 'error');
             }
