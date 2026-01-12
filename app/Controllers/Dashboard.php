@@ -11,7 +11,7 @@ class Dashboard extends BaseController
     protected $tiktokModel;
     protected $transaksiModel;
     protected $tokoModel;
-
+    
     public function __construct()
     {
         $this->userModel = new UserModel();
@@ -110,7 +110,8 @@ class Dashboard extends BaseController
             'stores' => [
                 'count' => $totalStores
             ],
-            'users_count' => $this->userModel->countAllResults()
+            'users_count' => $this->userModel->countAllResults(),
+            'availableYears' => range(date('Y') + 2, 2020) // Dynamic range from future years back to 2020
         ];
         return view('dashboard/index', $data);
     }
@@ -256,6 +257,87 @@ class Dashboard extends BaseController
     {
         session()->destroy();
         return redirect()->to('/auth/login');
+    }
+
+    public function chart_data()
+    {
+        if (!session()->get('isLoggedIn')) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Not authenticated']);
+        }
+
+        $year = $this->request->getVar('year') ?? date('Y');
+        $db = \Config\Database::connect();
+
+        // Initialize arrays for 12 months (indices 1-12)
+        $shopeeData = array_fill(1, 12, 0);
+        $tiktokData = array_fill(1, 12, 0);
+        $zefatexData = array_fill(1, 12, 0);
+
+        // 1. Shopee (upload_reports)
+        $shopeeQuery = $db->table('upload_reports')
+            ->select('MONTH(periode_awal) as month, SUM(total_penghasilan) as total')
+            ->where('YEAR(periode_awal)', $year)
+            ->groupBy('MONTH(periode_awal)')
+            ->get()->getResultArray();
+
+        foreach ($shopeeQuery as $row) {
+            $shopeeData[(int)$row['month']] = (float)$row['total'];
+        }
+
+        // 2. Tiktok (tiktok_daily_settlement)
+        // Using Model or Builder
+        $tiktokQuery = $this->tiktokModel
+            ->select('MONTH(periode_start) as month, SUM(settlement) as total')
+            ->where('YEAR(periode_start)', $year)
+            ->groupBy('MONTH(periode_start)')
+            ->findAll();
+
+        foreach ($tiktokQuery as $row) {
+             // Model might return array or object depending on returnType. Default is array for findAll with select?
+             // Helper check
+             $month = is_array($row) ? $row['month'] : $row->month;
+             $total = is_array($row) ? $row['total'] : $row->total;
+             $tiktokData[(int)$month] = (float)$total;
+        }
+
+        // 3. Zefatex (zefatex_transactions)
+        $zefatexModel = new \App\Models\ZefatexModel();
+        $zefatexQuery = $zefatexModel
+            ->select('MONTH(transaction_date) as month, SUM(total_amount) as total')
+            ->where('YEAR(transaction_date)', $year)
+            ->groupBy('MONTH(transaction_date)')
+            ->findAll();
+
+        foreach ($zefatexQuery as $row) {
+             $month = is_array($row) ? $row['month'] : $row->month;
+             $total = is_array($row) ? $row['total'] : $row->total;
+             $zefatexData[(int)$month] = (float)$total;
+        }
+
+        // Aggregate for Area Chart (Total Monthly Income)
+        $areaChartData = [];
+        $totalShopee = 0;
+        $totalTiktok = 0;
+        $totalZefatex = 0;
+
+        for ($i = 1; $i <= 12; $i++) {
+            $monthlyTotal = $shopeeData[$i] + $tiktokData[$i] + $zefatexData[$i];
+            $areaChartData[] = $monthlyTotal; // 0-indexed array for Chart.js [Jan, Feb... Dec]
+            
+            $totalShopee += $shopeeData[$i];
+            $totalTiktok += $tiktokData[$i];
+            $totalZefatex += $zefatexData[$i];
+        }
+
+        return $this->response->setJSON([
+            'year' => $year,
+            'area' => $areaChartData,
+            'pie' => [
+                'shopee' => $totalShopee,
+                'tiktok' => $totalTiktok,
+                'zefatex' => $totalZefatex
+            ]
+        ]);
     }
 
     private function getUserData()

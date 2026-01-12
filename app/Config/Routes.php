@@ -19,7 +19,9 @@ $routes->post('/dashboard/update_profile', 'Dashboard::update_profile');
 $routes->post('/dashboard/upload_foto', 'Dashboard::upload_foto');
 $routes->post('/dashboard/ganti_password', 'Dashboard::ganti_password');
 $routes->get('/dashboard/kelola_pengguna', 'Dashboard::kelola_pengguna');
+$routes->get('/dashboard/kelola_pengguna', 'Dashboard::kelola_pengguna');
 $routes->get('/dashboard/login_logout', 'Dashboard::login_logout');
+$routes->get('/dashboard/chart_data', 'Dashboard::chart_data');
 
 // ================== USER API ==================
 $routes->group('api', function ($routes) {

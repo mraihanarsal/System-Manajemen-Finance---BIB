@@ -38,7 +38,8 @@
 <script src="<?= base_url('vendor/chart.js/Chart.min.js') ?>"></script>
 
 <!-- Page level custom scripts -->
-<script src="<?= base_url('js/demo/chart-area-demo.js') ?>"></script>
-<script src="<?= base_url('js/demo/chart-pie-demo.js') ?>"></script>
+<!-- Removed static chart demos to allow dynamic loading in dashboard/index.php -->
+<!-- <script src="<?= base_url('js/demo/chart-area-demo.js') ?>"></script> -->
+<!-- <script src="<?= base_url('js/demo/chart-pie-demo.js') ?>"></script> -->
 </body>
 </html>
