@@ -56,13 +56,13 @@
             </div>
             <div class="mt-4 text-center small">
                 <span class="mr-2">
-                    <i class="fas fa-circle text-primary"></i> Shopee
+                    <i class="fas fa-circle" style="color: #fd7e14;"></i> Shopee
                 </span>
                 <span class="mr-2">
-                    <i class="fas fa-circle text-success"></i> Tiktok
+                    <i class="fas fa-circle" style="color: #000000;"></i> Tiktok
                 </span>
                 <span class="mr-2">
-                    <i class="fas fa-circle text-info"></i> Zefatex
+                    <i class="fas fa-circle" style="color: #4e73df;"></i> Zefatex
                 </span>
             </div>
         </div>

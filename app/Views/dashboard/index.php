@@ -176,8 +176,8 @@ function updatePieChart(data) {
             labels: ["Shopee", "Tiktok", "Zefatex"],
             datasets: [{
                 data: [data.shopee, data.tiktok, data.zefatex],
-                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
-                hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+                backgroundColor: ['#fd7e14', '#000000', '#4e73df'],
+                hoverBackgroundColor: ['#e36e0d', '#2c2c2c', '#2e59d9'],
                 hoverBorderColor: "rgba(234, 236, 244, 1)",
             }],
         },
