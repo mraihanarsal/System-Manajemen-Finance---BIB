@@ -38,13 +38,33 @@ class Laporan extends BaseController
             throw new \Exception('Dompdf library not found. Please run "composer require dompdf/dompdf"');
         }
 
-        $dataReport = $this->getReportData();
+        $filterType = $this->request->getGet('filter_type'); // 'year', 'date_range', or empty
+        $year = $this->request->getGet('year');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+
+        $filters = [
+            'type' => $filterType,
+            'year' => $year,
+            'start_date' => $startDate,
+            'end_date' => $endDate
+        ];
+
+        $dataReport = $this->getReportData($filters);
+        
+        // Generate Filter Info String
+        $filterInfo = 'Semua Periode';
+        if ($filterType === 'year' && $year) {
+            $filterInfo = "Tahun $year";
+        } elseif ($filterType === 'date_range' && $startDate && $endDate) {
+            $filterInfo = date('d-m-Y', strtotime($startDate)) . " s/d " . date('d-m-Y', strtotime($endDate));
+        }
         
         $data = [
             'report_data' => $dataReport,
             'title' => 'Laporan Keuangan',
             'generated_at' => date('d F Y H:i'),
-            'filter_info' => 'Semua Periode'
+            'filter_info' => $filterInfo
         ];
 
         $html = view('laporan/laporan_pdf', $data);
@@ -60,35 +80,49 @@ class Laporan extends BaseController
         $dompdf->stream("Laporan_Keuangan_".date('YmdHis').".pdf", ["Attachment" => false]);
     }
 
-    private function getReportData()
+    private function getReportData($filters = [])
     {
         $shopeeModel = new ReportModel(); 
         $tiktokModel = new TiktokTransaksiModel();
         $zefatexModel = new ZefatexModel();
         $pengeluaranModel = new PengeluaranModel();
 
+        // Helper to apply filters
+        $applyDateFilter = function($builder, $dateColumn) use ($filters) {
+            if (($filters['type'] ?? '') === 'year' && !empty($filters['year'])) {
+                $builder->where("YEAR($dateColumn)", $filters['year']);
+            } elseif (($filters['type'] ?? '') === 'date_range' && !empty($filters['start_date']) && !empty($filters['end_date'])) {
+                $builder->where("$dateColumn >=", $filters['start_date'])
+                        ->where("$dateColumn <=", $filters['end_date']);
+            }
+        };
+
         // 1. Get Monthly Data
         
         // Shopee (Revenue)
-        $shopeeData = $shopeeModel->select("DATE_FORMAT(periode_awal, '%Y-%m') as periode, SUM(total_penghasilan) as total")
-            ->groupBy("DATE_FORMAT(periode_awal, '%Y-%m')")
-            ->findAll();
+        $shopeeBuilder = $shopeeModel->select("DATE_FORMAT(periode_awal, '%Y-%m') as periode, SUM(total_penghasilan) as total")
+            ->groupBy("DATE_FORMAT(periode_awal, '%Y-%m')");
+        $applyDateFilter($shopeeBuilder, 'periode_awal');
+        $shopeeData = $shopeeBuilder->findAll();
 
         // Tiktok (Profit)
-        $tiktokData = $tiktokModel->select("DATE_FORMAT(periode_start, '%Y-%m') as periode, SUM(profit) as total")
+        $tiktokBuilder = $tiktokModel->select("DATE_FORMAT(periode_start, '%Y-%m') as periode, SUM(profit) as total")
             ->where('kategori !=', 'PENDAPATAN')
-            ->groupBy("DATE_FORMAT(periode_start, '%Y-%m')")
-            ->findAll();
+            ->groupBy("DATE_FORMAT(periode_start, '%Y-%m')");
+        $applyDateFilter($tiktokBuilder, 'periode_start');
+        $tiktokData = $tiktokBuilder->findAll();
 
         // Zefatex (Revenue)
-        $zefatexData = $zefatexModel->select("DATE_FORMAT(transaction_date, '%Y-%m') as periode, SUM(total_amount) as total")
-            ->groupBy("DATE_FORMAT(transaction_date, '%Y-%m')")
-            ->findAll();
+        $zefatexBuilder = $zefatexModel->select("DATE_FORMAT(transaction_date, '%Y-%m') as periode, SUM(total_amount) as total")
+            ->groupBy("DATE_FORMAT(transaction_date, '%Y-%m')");
+        $applyDateFilter($zefatexBuilder, 'transaction_date');
+        $zefatexData = $zefatexBuilder->findAll();
 
         // Pengeluaran
-        $expensesData = $pengeluaranModel->select("DATE_FORMAT(periode, '%Y-%m') as periode, SUM(jumlah) as total")
-            ->groupBy("DATE_FORMAT(periode, '%Y-%m')")
-            ->findAll();
+        $expensesBuilder = $pengeluaranModel->select("DATE_FORMAT(periode, '%Y-%m') as periode, SUM(jumlah) as total")
+            ->groupBy("DATE_FORMAT(periode, '%Y-%m')");
+        $applyDateFilter($expensesBuilder, 'periode');
+        $expensesData = $expensesBuilder->findAll();
 
         // 2. Aggregate by Period
         $aggregated = [];

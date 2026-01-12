@@ -26,10 +26,10 @@
             <tr style="border: none;">
                 <td style="width: 20%; text-align: center; border: 1px solid black; padding: 10px;">
                     <!-- Placeholder for Logo - Ensure 'public/img/logo.png' exists or update path -->
-                    <img src="<?= FCPATH . 'img/konveksi.png' ?>" style="width: 100px; height: auto;" alt="Logo">
+                    <img src="<?= FCPATH . 'img/logobex.png' ?>" style="width: 100px; height: auto;" alt="Logo">
                 </td>
                 <td style="width: 80%; text-align: center; border: 1px solid black; border-left: none; padding: 5px;">
-                    <h2 style="margin: 0; font-family: Arial, sans-serif; font-size: 18px;">PT BEX INDO BERKAT</h2>
+                    <h2 style="margin: 2px 0; font-family: Arial, sans-serif; font-size: 18px;">PT BEX INDO BERKAT</h2>
                     <p style="margin: 2px 0; font-size: 12px;">Meadow Green Residence 5, Jalan Mandor Samin No. 17,</p>
                     <p style="margin: 2px 0; font-size: 12px;">RT 2 / RW 5, Kali Baru, Cilodong (No.64) Kota Depok - Jawa Barat 16414.</p>
                 </td>
