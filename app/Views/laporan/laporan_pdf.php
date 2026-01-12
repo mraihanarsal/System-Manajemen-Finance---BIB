@@ -25,8 +25,17 @@
         <table style="width: 100%; border: none; margin-bottom: 20px;">
             <tr style="border: none;">
                 <td style="width: 20%; text-align: center; border: 1px solid black; padding: 10px;">
-                    <!-- Placeholder for Logo - Ensure 'public/img/logo.png' exists or update path -->
-                    <img src="<?= FCPATH . 'img/logobex.png' ?>" style="width: 100px; height: auto;" alt="Logo">
+                    <?php
+                    $path = FCPATH . 'img/logobex.png';
+                    if (file_exists($path)) {
+                        $type = pathinfo($path, PATHINFO_EXTENSION);
+                        $data = file_get_contents($path);
+                        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                        echo '<img src="' . $base64 . '" style="width: 100px; height: auto;" alt="Logo">';
+                    } else {
+                         echo 'Logo Not Found';
+                    }
+                    ?>
                 </td>
                 <td style="width: 80%; text-align: center; border: 1px solid black; border-left: none; padding: 5px;">
                     <h2 style="margin: 2px 0; font-family: Arial, sans-serif; font-size: 18px;">PT BEX INDO BERKAT</h2>

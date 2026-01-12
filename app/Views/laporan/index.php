@@ -7,8 +7,101 @@
     <!-- Header -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Laporan Keuangan</h1>
-
     </div>
+
+    <!-- Filter Section -->
+    <div class="card shadow-sm mb-4 border-left-primary">
+        <div class="card-header py-3 bg-white d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-filter mr-2"></i>Filter Laporan Keuangan</h6>
+        </div>
+        <div class="card-body">
+            <form id="filterForm">
+                <div class="row">
+                    <!-- 1. Jenis Filter -->
+                    <div class="col-md-6 mb-3">
+                        <label for="filter_type" class="small font-weight-bold text-gray-700">Jenis Filter</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light border-0"><i class="fas fa-list text-gray-500"></i></span>
+                            </div>
+                            <select class="form-control border-left-0 bg-light" id="filter_type" name="filter_type" style="height: 45px;">
+                                <option value="">Semua Periode</option>
+                                <option value="year">Per Tahun</option>
+                                <option value="date_range">Rentang Tanggal</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- 2. Dynamic Inputs -->
+                    <div class="col-md-6 mb-3">
+                         <!-- Placeholder -->
+                        <div id="empty_input" class="form-control border-0 bg-transparent" style="height: 45px;"></div>
+
+                        <!-- Year Input -->
+                        <div id="year_input" class="d-none transition-fade">
+                            <label for="year" class="small font-weight-bold text-gray-700">Pilih Tahun</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text bg-light border-0"><i class="fas fa-calendar-year text-gray-500"></i></span>
+                                </div>
+                                <select class="form-control border-left-0 bg-light" id="year" name="year" style="height: 45px;">
+                                    <?php 
+                                    $currYear = date('Y');
+                                    for($i = $currYear; $i >= 2020; $i--) {
+                                        echo "<option value='$i'>$i</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Date Range Input -->
+                        <div class="d-none range-input transition-fade">
+                            <label class="small font-weight-bold text-gray-700">Rentang Tanggal</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="date" class="form-control bg-light" id="start_date" name="start_date" style="height: 45px;">
+                                </div>
+                                <div class="col-6">
+                                    <input type="date" class="form-control bg-light" id="end_date" name="end_date" style="height: 45px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- 3. Actions -->
+                    <div class="col-12 text-right">
+                         <button type="button" id="btnFilter" class="btn btn-primary shadow-sm mr-2" style="height: 45px; min-width: 150px;">
+                            <i class="fas fa-search mr-2"></i> Tampilkan
+                        </button>
+                        <a href="/laporan_pdf" id="btnDownloadPdf" target="_blank" class="btn btn-danger shadow-sm" style="height: 45px; min-width: 150px;">
+                            <i class="fas fa-file-pdf mr-2"></i> Download PDF
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <style>
+        .transition-fade {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #4e73df;
+            background-color: #fff !important;
+        }
+        .input-group-text {
+            color: #6e707e;
+        }
+    </style>
 
     <!-- DataTables -->
     <div class="card shadow mb-4">
@@ -18,14 +111,14 @@
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="tblLaporan" width="100%" cellspacing="0">
-                    <thead class="bg-primary text-white">
+                    <thead class="thead-light">
                         <tr>
-                            <th width="5%">No.</th>
-                            <th width="15%">Bulan</th>
-                            <th width="10%">Tahun</th>
-                            <th>Pemasukan (Rp)</th>
-                            <th>Pengeluaran (Rp)</th>
-                            <th>Bersih (Rp)</th>
+                            <th class="text-center align-middle" width="5%">No.</th>
+                            <th class="text-center align-middle" width="15%">Bulan</th>
+                            <th class="text-center align-middle" width="10%">Tahun</th>
+                            <th class="text-center align-middle">Pemasukan (Rp)</th>
+                            <th class="text-center align-middle">Pengeluaran (Rp)</th>
+                            <th class="text-center align-middle">Bersih (Rp)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -70,11 +163,14 @@ $(document).ready(function() {
         // Reset visibility
         $('#year_input').addClass('d-none');
         $('.range-input').addClass('d-none');
+        $('#empty_input').addClass('d-none');
         
         if (type === 'year') {
             $('#year_input').removeClass('d-none');
         } else if (type === 'date_range') {
             $('.range-input').removeClass('d-none');
+        } else {
+            $('#empty_input').removeClass('d-none');
         }
         updatePdfLink();
     });
@@ -89,7 +185,7 @@ $(document).ready(function() {
 
     function updatePdfLink() {
         var params = $('#filterForm').serialize();
-        var url = "<?= site_url('laporan/generate_pdf') ?>?" + params;
+        var url = "<?= site_url('laporan/download_pdf') ?>?" + params;
         $('#btnDownloadPdf').attr('href', url);
     } // Changed download_pdf to generate_pdf based on Controller method
 
