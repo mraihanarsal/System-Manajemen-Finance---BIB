@@ -7,9 +7,7 @@
     <!-- Header -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Laporan Keuangan</h1>
-        <a href="<?= site_url('laporan/download_pdf') ?>" target="_blank" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm">
-            <i class="fas fa-file-pdf fa-sm text-white-50"></i> Download Laporan PDF
-        </a>
+
     </div>
 
     <!-- DataTables -->
@@ -65,14 +63,50 @@ $(document).ready(function() {
         return parseInt(angka).toLocaleString("id-ID");
     }
 
+    // Handle Filter Type Change
+    $('#filter_type').change(function() {
+        var type = $(this).val();
+        
+        // Reset visibility
+        $('#year_input').addClass('d-none');
+        $('.range-input').addClass('d-none');
+        
+        if (type === 'year') {
+            $('#year_input').removeClass('d-none');
+        } else if (type === 'date_range') {
+            $('.range-input').removeClass('d-none');
+        }
+        updatePdfLink();
+    });
+
+    // Initialize with default PDF link
+    updatePdfLink();
+
+    // Trigger Update on Input Change
+    $('#year, #start_date, #end_date').change(function() {
+        updatePdfLink();
+    });
+
+    function updatePdfLink() {
+        var params = $('#filterForm').serialize();
+        var url = "<?= site_url('laporan/generate_pdf') ?>?" + params;
+        $('#btnDownloadPdf').attr('href', url);
+    } // Changed download_pdf to generate_pdf based on Controller method
+
     // Initialize DataTable
     var table = $('#tblLaporan').DataTable({
         "processing": true,
         "ajax": {
             "url": "<?= site_url('laporan/getData') ?>",
             "type": "GET",
+            "data": function(d) {
+                // Add filter params to AJAX request
+                d.filter_type = $('#filter_type').val();
+                d.year = $('#year').val();
+                d.start_date = $('#start_date').val();
+                d.end_date = $('#end_date').val();
+            },
             "dataSrc": function(json) {
-                // Return data array
                 return json.data;
             }
         },
@@ -94,7 +128,7 @@ $(document).ready(function() {
             },
             { 
                 "data": "pengeluaran",
-                 "render": function(data) {
+                "render": function(data) {
                     return '<div class="text-right fw-bold text-danger">' + formatRupiah(data) + '</div>';
                 }
             },
@@ -146,6 +180,11 @@ $(document).ready(function() {
             $( '#totalKeluar' ).html(formatRupiah(totalKeluar));
             $( '#totalBersih' ).html(formatRupiah(totalBersih));
         }
+    });
+
+    // Filter Button Click
+    $('#btnFilter').click(function() {
+        table.ajax.reload();
     });
 });
 </script>
