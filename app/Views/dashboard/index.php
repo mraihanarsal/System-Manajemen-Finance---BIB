@@ -60,6 +60,13 @@ function fetchChartData(year) {
         success: function(response) {
             updateAreaChart(response.area);
             updatePieChart(response.pie);
+            
+            // Update Cards
+            $('#card-income-label').text('Total Pemasukan (' + response.year + ')');
+            $('#card-income-value').text(number_format_rupiah(response.cards.income));
+            
+            $('#card-expense-label').text('Total Pengeluaran (' + response.year + ')');
+            $('#card-expense-value').text(number_format_rupiah(response.cards.expense));
         },
         error: function(xhr, status, error) {
             console.error(error);

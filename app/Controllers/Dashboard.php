@@ -90,6 +90,7 @@ class Dashboard extends BaseController
 
         $data = [
             'title' => 'Dashboard',
+            'currentYear' => $currentYear,
             'user' => $this->getUserData(),
             'income' => [
                 'monthly' => $totalIncomeMonthly,
@@ -329,6 +330,14 @@ class Dashboard extends BaseController
             $totalZefatex += $zefatexData[$i];
         }
 
+        // Total Income
+        $totalIncome = $totalShopee + $totalTiktok + $totalZefatex;
+
+        // Total Expense
+        $expenseModel = new \App\Models\PengeluaranModel();
+        $totalExpense = $expenseModel->where('YEAR(periode)', $year)
+                                     ->selectSum('jumlah')->first()['jumlah'] ?? 0;
+
         return $this->response->setJSON([
             'year' => $year,
             'area' => $areaChartData,
@@ -336,6 +345,10 @@ class Dashboard extends BaseController
                 'shopee' => $totalShopee,
                 'tiktok' => $totalTiktok,
                 'zefatex' => $totalZefatex
+            ],
+            'cards' => [
+                'income' => (float)$totalIncome,
+                'expense' => (float)$totalExpense
             ]
         ]);
     }
