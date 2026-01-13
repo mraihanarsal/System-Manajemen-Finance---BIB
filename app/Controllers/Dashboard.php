@@ -108,6 +108,10 @@ class Dashboard extends BaseController
                 'monthly' => $expenseMonthly,
                 'yearly' => $expenseYearly
             ],
+            'net_income' => [
+                'monthly' => $totalIncomeMonthly - $expenseMonthly,
+                'yearly' => $totalIncomeYearly - $expenseYearly
+            ],
             'stores' => [
                 'count' => $totalStores
             ],
@@ -348,7 +352,8 @@ class Dashboard extends BaseController
             ],
             'cards' => [
                 'income' => (float)$totalIncome,
-                'expense' => (float)$totalExpense
+                'expense' => (float)$totalExpense,
+                'net_income' => (float)($totalIncome - $totalExpense)
             ]
         ]);
     }

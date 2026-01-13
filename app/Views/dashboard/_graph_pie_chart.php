@@ -1,8 +1,8 @@
 <!-- Area Chart -->
 <div class="col-xl-8 col-lg-7">
-    <div class="card shadow mb-4">
+    <div class="card card-premium shadow mb-4">
         <!-- Card Header - Dropdown -->
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white border-bottom-0">
             <h6 class="m-0 font-weight-bold text-primary">Grafik Tahunan</h6>
             <div class="dropdown no-arrow">
                 <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
@@ -30,9 +30,9 @@
 
 <!-- Pie Chart -->
 <div class="col-xl-4 col-lg-5">
-    <div class="card shadow mb-4">
+    <div class="card card-premium shadow mb-4">
         <!-- Card Header - Dropdown -->
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white border-bottom-0">
             <h6 class="m-0 font-weight-bold text-primary">Sumber Pendapatan</h6>
             <div class="dropdown no-arrow">
                 <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
@@ -59,7 +59,7 @@
                     <i class="fas fa-circle" style="color: #fd7e14;"></i> Shopee
                 </span>
                 <span class="mr-2">
-                    <i class="fas fa-circle" style="color: #000000;"></i> Tiktok
+                    <i class="fas fa-circle" style="color: #1cc88a;"></i> Tiktok
                 </span>
                 <span class="mr-2">
                     <i class="fas fa-circle" style="color: #4e73df;"></i> Zefatex

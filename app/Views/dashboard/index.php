@@ -62,11 +62,16 @@ function fetchChartData(year) {
             updatePieChart(response.pie);
             
             // Update Cards
+            // Use .html() or .text() carefully to preserve formatting if needed, but text is fine here
             $('#card-income-label').text('Total Pemasukan (' + response.year + ')');
             $('#card-income-value').text(number_format_rupiah(response.cards.income));
             
             $('#card-expense-label').text('Total Pengeluaran (' + response.year + ')');
             $('#card-expense-value').text(number_format_rupiah(response.cards.expense));
+
+            // Net Income
+            $('#card-net-income-label').text('Pendapatan Bersih (' + response.year + ')');
+            $('#card-net-income-value').text(number_format_rupiah(response.cards.net_income));
         },
         error: function(xhr, status, error) {
             console.error(error);
@@ -81,19 +86,24 @@ function updateAreaChart(data) {
         myAreaChart.destroy();
     }
 
+    // Gradient for Area Chart
+    var gradientFill = ctx.getContext("2d").createLinearGradient(0, 0, 0, 400);
+    gradientFill.addColorStop(0, "rgba(78, 115, 223, 0.5)"); // Start color
+    gradientFill.addColorStop(1, "rgba(78, 115, 223, 0.05)"); // End color
+
     myAreaChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
             datasets: [{
                 label: "Pendapatan",
-                lineTension: 0.3,
-                backgroundColor: "rgba(78, 115, 223, 0.05)",
+                lineTension: 0.4, // Smoother curve
+                backgroundColor: gradientFill,
                 borderColor: "rgba(78, 115, 223, 1)",
-                pointRadius: 3,
+                pointRadius: 4,
                 pointBackgroundColor: "rgba(78, 115, 223, 1)",
-                pointBorderColor: "rgba(78, 115, 223, 1)",
-                pointHoverRadius: 3,
+                pointBorderColor: "#fff",
+                pointHoverRadius: 5,
                 pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
                 pointHoverBorderColor: "rgba(78, 115, 223, 1)",
                 pointHitRadius: 10,
@@ -128,7 +138,6 @@ function updateAreaChart(data) {
                     ticks: {
                         maxTicksLimit: 5,
                         padding: 10,
-                        // Include a dollar sign in the ticks
                         callback: function(value, index, values) {
                             return number_format_rupiah(value);
                         }
@@ -183,8 +192,9 @@ function updatePieChart(data) {
             labels: ["Shopee", "Tiktok", "Zefatex"],
             datasets: [{
                 data: [data.shopee, data.tiktok, data.zefatex],
-                backgroundColor: ['#fd7e14', '#000000', '#4e73df'],
-                hoverBackgroundColor: ['#e36e0d', '#2c2c2c', '#2e59d9'],
+                // Updated colors for better contrast/modern look
+                backgroundColor: ['#fd7e14', '#1cc88a', '#4e73df'], 
+                hoverBackgroundColor: ['#e36e0d', '#17a673', '#2e59d9'],
                 hoverBorderColor: "rgba(234, 236, 244, 1)",
             }],
         },
@@ -212,7 +222,7 @@ function updatePieChart(data) {
             legend: {
                 display: false
             },
-            cutoutPercentage: 80,
+            cutoutPercentage: 75, // Thinner doughnut
         },
     });
 }
