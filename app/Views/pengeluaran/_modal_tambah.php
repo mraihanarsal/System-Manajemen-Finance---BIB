@@ -9,7 +9,7 @@
             <div class="modal-body p-4 bg-light bg-opacity-10">
                 <form id="formTambah">
                     <div class="mb-3">
-                        <label class="form-label-premium">Periode Tanggal</label>
+                        <label class="form-label-premium">Tanggal Pengeluaran</label>
                         <input type="date" class="form-control form-control-premium" name="periode" value="<?= date('Y-m-d') ?>" required>
                     </div>
 

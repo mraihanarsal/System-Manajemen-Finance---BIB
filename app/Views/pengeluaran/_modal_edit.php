@@ -11,7 +11,7 @@
                     <input type="hidden" name="id" id="editId">
                     
                     <div class="mb-3">
-                        <label class="form-label-premium">Periode Tanggal</label>
+                        <label class="form-label-premium">Tanggal Pengeluaran</label>
                         <input type="date" class="form-control form-control-premium" name="periode" id="editPeriode" required>
                     </div>
 

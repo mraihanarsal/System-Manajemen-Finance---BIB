@@ -33,8 +33,9 @@
                 </select>
             </div>
             <div class="col-md-2">
+                 <label class="form-label-premium w-100">&nbsp;</label>
                  <button type="button" id="btnFilter" class="btn btn-primary-premium w-100 justify-content-center">
-                    <i class="fas fa-filter"></i> Terapkan
+                    <i class="fas fa-filter"></i> Filter
                  </button>
             </div>
         </form>
