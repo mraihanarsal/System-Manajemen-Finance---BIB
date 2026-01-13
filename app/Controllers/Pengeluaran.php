@@ -41,10 +41,6 @@ class Pengeluaran extends BaseController
             $cat   = $this->request->getGet('kategori_id');
             $year  = $this->request->getGet('year');  // New Year Param
 
-            // DEBUG: Log params to verify what is received
-            // file_put_contents('debug_filter.txt', print_r($this->request->getGet(), true));
-
-            // Normalize: If Year is present, FORCE usage of its range, overriding client params
             if (!empty($year)) {
                  $start = $year . '-01-01';
                  $end   = $year . '-12-31';
