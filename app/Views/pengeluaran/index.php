@@ -4,8 +4,8 @@
 <div class="container-fluid py-4 animate-fade-in">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h1 class="page-title mb-1">Pengeluaran</h1>
-        <p class="page-subtitle mb-0">Kelola dan pantau pengeluaran operasional dengan mudah.</p>
+        <h1 class="page-title mb-1 ml-2">Kelola Pengeluaran</h1>
+        <p class="page-subtitle mb-0"></p>
     </div>
     <!-- Button moved to header for better UX -->
     <button class="btn btn-primary-premium" data-bs-toggle="modal" data-bs-target="#modalTambah">
