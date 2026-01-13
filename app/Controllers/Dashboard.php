@@ -96,14 +96,6 @@ class Dashboard extends BaseController
                 'monthly' => $totalIncomeMonthly,
                 'yearly' => $totalIncomeYearly
             ],
-            // We don't have separate expense card in original UI, but user asked for "pendapatan tahunan... bulanan... jadi otomatis terupdate jika user melakukan aksi update pemasukan atau pengeluarannya".
-            // Wait, the UI has "Pendapatan (Bulanan)", "Pendapatan (Tahunan)".
-            // It does NOT have an "Expense" card explicitly shown in my view_file output of `_cards_earning.php`.
-            // Ah, I should check if I need to ADD an expense card or if "Pengeluaran" is just for the graph?
-            // User said: "pada bagian pengeluaran belum ada riwayat pengeluarannya ini harus dinamis" which refers to the Pengeluaran page likely.
-            // But the dashboard should probably reflect Net Income? Or just Gross? 
-            // Usually "Pendapatan" is Revenue. 
-            // I will pass expense data just in case I want to calculate Net.
             'expense' => [
                 'monthly' => $expenseMonthly,
                 'yearly' => $expenseYearly
