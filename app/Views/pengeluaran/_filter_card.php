@@ -1,31 +1,40 @@
-<div class="card shadow mb-4">
-    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalTambah">
-            <i class="fas fa-plus"></i> Buat Pengeluaran
-        </button>
-    </div>
-    <div class="card-body">
+<div class="card card-premium mb-0">
+    <div class="card-body p-4">
         <form id="filterForm" class="row g-3 align-items-end">
-             <div class="col-md-3">
-                <label for="filterStart" class="form-label fw-bold small">Mulai Tanggal</label>
-                <input type="date" class="form-control" id="filterStart" name="start" value="<?= date('Y-m-01') ?>">
+            <!-- Year Filter -->
+            <div class="col-md-2">
+                <label for="filterTahun" class="form-label-premium">
+                    <i class="fas fa-history text-primary me-1"></i> Riwayat
+                </label>
+                <input type="number" class="form-control form-control-premium" id="filterTahun" placeholder="Tahun" min="2000" max="2100" value="<?= date('Y') ?>">
             </div>
-            <div class="col-md-3">
-                <label for="filterEnd" class="form-label fw-bold small">Sampai Tanggal</label>
-                <input type="date" class="form-control" id="filterEnd" name="end" value="<?= date('Y-m-t') ?>">
+            
+             <div class="col-md-2">
+                <label for="filterStart" class="form-label-premium">
+                    <i class="far fa-calendar-alt me-1 text-primary"></i> Mulai
+                </label>
+                <input type="date" class="form-control form-control-premium" id="filterStart" name="start" value="<?= date('Y-01-01') ?>">
             </div>
-            <div class="col-md-3">
-                <label for="filterKategori" class="form-label fw-bold small">Kategori</label>
-                <select class="form-control" id="filterKategori" name="kategori_id">
+            <div class="col-md-2">
+                <label for="filterEnd" class="form-label-premium">
+                    <i class="far fa-calendar-alt me-1 text-primary"></i> Sampai
+                </label>
+                <input type="date" class="form-control form-control-premium" id="filterEnd" name="end" value="<?= date('Y-12-31') ?>">
+            </div>
+            <div class="col-md-4">
+                <label for="filterKategori" class="form-label-premium">
+                    <i class="fas fa-tags me-1 text-primary"></i> Kategori
+                </label>
+                <select class="form-control form-control-premium" id="filterKategori" name="kategori_id">
                     <option value="">Semua Kategori</option>
                     <?php foreach ($kategori as $k): ?>
                         <option value="<?= $k['id'] ?>"><?= esc($k['nama']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-3 text-end">
-                 <button type="button" id="btnFilter" class="btn btn-primary w-100">
-                    <i class="fas fa-filter"></i> Tampilkan
+            <div class="col-md-2">
+                 <button type="button" id="btnFilter" class="btn btn-primary-premium w-100 justify-content-center">
+                    <i class="fas fa-filter"></i> Terapkan
                  </button>
             </div>
         </form>

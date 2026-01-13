@@ -1,28 +1,25 @@
-<div class="card shadow mb-4">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover" id="tabelPengeluaran" width="100%" cellspacing="0">
-                <thead class="bg-primary text-white">
-                    <tr>
-                        <th width="5%" class="text-center">No</th>
-                        <th width="15%">Periode</th>
-                        <th width="20%">Kategori</th>
-                        <th>Deskripsi</th>
-                        <th width="20%" class="text-end">Jumlah (Rp)</th>
-                        <th width="15%" class="text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Data populated by AJAX -->
-                </tbody>
-                <tfoot class="bg-light fw-bold">
-                    <tr>
-                        <th colspan="4" class="text-end">TOTAL</th>
-                        <th class="text-end text-danger" id="grandTotal">Rp 0</th>
-                        <th></th>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    </div>
+<div class="table-responsive">
+    <table class="table table-hover align-middle mb-0" id="tabelPengeluaran" width="100%" cellspacing="0" style="border-collapse: separate; border-spacing: 0;">
+        <thead class="bg-light">
+            <tr style="border-bottom: 2px solid #e2e8f0;">
+                <th width="5%" class="text-center py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
+                <th width="15%" class="sortable py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sort="periode" style="cursor: pointer;">
+                    Periode <i class="fas fa-sort text-muted ms-1 sort-icon"></i>
+                </th>
+                <th width="20%" class="sortable py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sort="nama_kategori" style="cursor: pointer;">
+                    Kategori <i class="fas fa-sort text-muted ms-1 sort-icon"></i>
+                </th>
+                <th class="sortable py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sort="deskripsi" style="cursor: pointer;">
+                    Deskripsi <i class="fas fa-sort text-muted ms-1 sort-icon"></i>
+                </th>
+                <th width="20%" class="text-end sortable py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7" data-sort="jumlah" style="cursor: pointer;">
+                    Jumlah <i class="fas fa-sort text-muted ms-1 sort-icon"></i>
+                </th>
+                <th width="15%" class="text-center py-3 text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Aksi</th>
+            </tr>
+        </thead>
+        <tbody class="text-secondary text-sm font-weight-bold">
+            <!-- Data populated by AJAX -->
+        </tbody>
+    </table>
 </div>

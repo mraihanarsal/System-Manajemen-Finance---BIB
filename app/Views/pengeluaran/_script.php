@@ -1,10 +1,12 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const rowsPerPage = 10;
+    let rowsPerPage = 10; // Mutable
+    let sortBy = 'periode';
+    let order = 'DESC';
     let allData = [];
     let currentPage = 1;
     let totalRows = 0; 
-
+    
     // Format Rupiah untuk display
     function formatRupiah(angka) {
         if (!angka) return "Rp 0";
@@ -36,9 +38,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const start = $('#filterStart').val();
         const end = $('#filterEnd').val();
         const cat = $('#filterKategori').val();
+        const year = $('#filterTahun').val(); 
+
         currentPage = page;
 
         $('#tabelPengeluaran tbody').html('<tr><td colspan="6" class="text-center">Loading data...</td></tr>');
+
+        // Debug params
+        // console.log('Loading data params:', { page, limit: rowsPerPage, start, end, cat, year, sortBy, order });
 
         $.ajax({
             url: "<?= site_url('pengeluaran/getAll') ?>",
@@ -48,7 +55,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 limit: rowsPerPage, 
                 start: start, 
                 end: end,
-                kategori_id: cat
+                kategori_id: cat,
+                year: year,
+                sort_by: sortBy,
+                order: order
             },
             dataType: 'json',
             success: function(response) {
@@ -73,13 +83,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadTotal() {
         const start = $('#filterStart').val();
         const end = $('#filterEnd').val();
+        const year = $('#filterTahun').val();
 
         $.ajax({
             url: "<?= site_url('pengeluaran/getTotal') ?>",
             type: 'GET',
             data: { 
                 start: start, 
-                end: end 
+                end: end,
+                year: year
             },
             dataType: 'json',
             success: function(response) {
@@ -114,24 +126,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
             html += `
               <tr>
-                <td class="text-center">${no++}</td>
-                <td>${formatTanggal(row.periode)}</td>
-                <td><span class="badge bg-secondary">${namaKategori}</span></td>
-                <td title="${row.deskripsi || ''}">${deskripsi || '-'}</td>
+                <td class="text-center text-muted small">${no++}</td>
+                <td class="fw-medium">${formatTanggal(row.periode)}</td>
+                <td><span class="badge badge-premium badge-soft-primary">${namaKategori}</span></td>
+                <td title="${row.deskripsi || ''}" class="text-muted small">${deskripsi || '-'}</td>
                 <td class="text-end font-monospace fw-bold text-dark">${formatRupiah(row.jumlah)}</td>
                 <td class="text-center">
                   <div class="btn-group" role="group">
-                    <button class="btn btn-warning btn-sm btn-edit"
+                    <button class="btn btn-light text-warning btn-sm btn-edit border"
+                            data-bs-toggle="tooltip" title="Edit"
                             data-id="${row.id}"
                             data-kategori="${row.kategori_id}"
                             data-deskripsi="${row.deskripsi}"
                             data-periode="${row.periode}"
                             data-nominal="${row.jumlah}">
-                            <i class="fas fa-edit"></i>
+                            <i class="fas fa-pen"></i>
                     </button>
-                    <button class="btn btn-danger btn-sm btn-hapus"
+                    <button class="btn btn-light text-danger btn-sm btn-hapus border"
+                            data-bs-toggle="tooltip" title="Hapus"
                             data-id="${row.id}">
-                            <i class="fas fa-trash"></i>
+                            <i class="fas fa-trash-alt"></i>
                     </button>
                   </div>
                 </td>
@@ -140,6 +154,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         $('#tabelPengeluaran tbody').html(html);
+        // Initialize tooltips if BS5 is active (optional but good)
+        // var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        // var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        //   return new bootstrap.Tooltip(tooltipTriggerEl)
+        // })
     }
 
     // Render pagination (Simple version)
@@ -189,9 +208,48 @@ document.addEventListener('DOMContentLoaded', function() {
         loadData(page);
     });
 
+    // Rows Per Page Change
+    $('#rowsPerPage').change(function() {
+        rowsPerPage = $(this).val();
+        currentPage = 1; // Reset to page 1
+        loadData();
+    });
+
+    // Sorting Click
+    $('.sortable').click(function() {
+        const column = $(this).data('sort');
+        if (sortBy === column) {
+            // Toggle order
+            order = (order === 'ASC') ? 'DESC' : 'ASC';
+        } else {
+            sortBy = column;
+            order = 'ASC'; // Default new sort to ASC
+        }
+        
+        // Update Icons
+        $('.sort-icon').attr('class', 'fas fa-sort text-muted ms-1 sort-icon'); // Reset all
+        const iconClass = (order === 'ASC') ? 'fas fa-sort-up text-primary ms-1 sort-icon' : 'fas fa-sort-down text-primary ms-1 sort-icon';
+        $(this).find('.sort-icon').attr('class', iconClass);
+
+        loadData(currentPage);
+    });
+
+    // Filter logic
     $('#btnFilter').click(function() {
         currentPage = 1;
         loadData();
+    });
+
+    // Auto-filter when Year changes
+    $('#filterTahun').on('input change', function() {
+        const year = $(this).val();
+        // Only trigger if valid 4-digit year
+        if(year && year.length === 4 && year >= 2000 && year <= 2100) {
+            $('#filterStart').val(year + '-01-01');
+            $('#filterEnd').val(year + '-12-31');
+            currentPage = 1;
+            loadData();
+        }
     });
 
     // === CRUD OPERATIONS ===

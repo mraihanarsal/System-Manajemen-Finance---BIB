@@ -10,7 +10,7 @@ class PengeluaranModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $allowedFields    = ['periode', 'kategori_id', 'deskripsi', 'jumlah', 'created_by', 'created_at', 'updated_at'];
-    protected $useTimestamps    = true; // CI4 handles created_at/updated_at automatically if configured
+    protected $useTimestamps    = true; 
     protected $createdField     = 'created_at';
     protected $updatedField     = 'updated_at';
 

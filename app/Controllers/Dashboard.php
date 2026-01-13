@@ -79,9 +79,6 @@ class Dashboard extends BaseController
         $expenseYearly = $this->pengeluaranModel->where('YEAR(periode)', $currentYear)
                                                 ->selectSum('jumlah')->first()['jumlah'] ?? 0;
 
-        // --- TOKO SAYA (Stores) ---
-        // Only Shopee and Tiktok are typically counted in master_toko if Zefatex is just 1 manual one?
-        // User said: "toko saya belum diketahui jumlahnya berapa dari semua platform (kalo zefatex memang cuman 1 aja)"
         $shopeeStores = $this->tokoModel->where('platform', 'shopee')->countAllResults();
         $tiktokStores = $this->tokoModel->where('platform', 'tiktok')->countAllResults();
         $zefatexStores = 1; 

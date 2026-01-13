@@ -39,33 +39,66 @@ class Pengeluaran extends BaseController
             $start = $this->request->getGet('start'); // YYYY-MM-DD
             $end   = $this->request->getGet('end');   // YYYY-MM-DD
             $cat   = $this->request->getGet('kategori_id');
+            $year  = $this->request->getGet('year');  // New Year Param
+
+            // DEBUG: Log params to verify what is received
+            // file_put_contents('debug_filter.txt', print_r($this->request->getGet(), true));
+
+            // Normalize: If Year is present, FORCE usage of its range, overriding client params
+            if (!empty($year)) {
+                 $start = $year . '-01-01';
+                 $end   = $year . '-12-31';
+            }
 
             $offset = ($page - 1) * $limit;
 
-            // Build query
-            $builder = $this->pengeluaranModel
-                ->select('pengeluaran.*, kategori_pengeluaran.nama as nama_kategori, kategori_pengeluaran.kode as kode_kategori')
-                ->join('kategori_pengeluaran', 'kategori_pengeluaran.id = pengeluaran.kategori_id', 'left');
+            // Use Explicit Builder to ensure strict control over the query
+            // and avoid any Model-level interference or state retention
+            $builder = $this->pengeluaranModel->builder(); 
+            
+            $builder->select('pengeluaran.*, kategori_pengeluaran.nama as nama_kategori, kategori_pengeluaran.kode as kode_kategori');
+            $builder->join('kategori_pengeluaran', 'kategori_pengeluaran.id = pengeluaran.kategori_id', 'left');
 
+            // Apply Date Range Filter with Raw SQL
             if (!empty($start) && !empty($end)) {
-                $builder->where('periode >=', $start)
-                        ->where('periode <=', $end);
+                $s = $this->pengeluaranModel->db->escapeString($start);
+                $e = $this->pengeluaranModel->db->escapeString($end);
+                $builder->where("pengeluaran.periode BETWEEN '$s' AND '$e'");
             }
-            // Fallback: jika tidak ada filter, default bulan ini? atau show all?
-            // User request suggests specific period logic, let's allow all if empty or default to current month client-side.
 
             if (!empty($cat)) {
-                $builder->where('kategori_id', $cat);
+                $builder->where('pengeluaran.kategori_id', $cat);
             }
 
-            // Clone builder for count
-            $countBuilder = clone $builder;
-            $total = $countBuilder->countAllResults();
+            // Count total (keep compiled select for next query)
+            $total = $builder->countAllResults(false);
             
+            // Sort Params
+            $sortBy = $this->request->getGet('sort_by') ?? 'periode';
+            $order  = $this->request->getGet('order') ?? 'DESC';
+
+            // Whitelist sort columns
+            $allowedSorts = ['periode', 'jumlah', 'deskripsi', 'nama_kategori'];
+            if (!in_array($sortBy, $allowedSorts)) {
+                $sortBy = 'periode';
+            }
+            
+            // Normalize sorting for joined columns if needed
+            if ($sortBy === 'nama_kategori') {
+                 $sortColumn = 'kategori_pengeluaran.nama';
+            } elseif ($sortBy === 'jumlah') {
+                 $sortColumn = 'pengeluaran.jumlah';
+            } elseif ($sortBy === 'deskripsi') {
+                 $sortColumn = 'pengeluaran.deskripsi';
+            } else {
+                 $sortColumn = 'pengeluaran.periode';
+            }
+
             // Get data
-            $data = $builder->orderBy('periode', 'DESC')
-                            ->orderBy('created_at', 'DESC')
-                            ->findAll($limit, $offset);
+            $data = $builder->orderBy($sortColumn, $order)
+                            ->orderBy('pengeluaran.created_at', 'DESC') // Secondary sort
+                            ->get($limit, $offset)
+                            ->getResultArray();
 
             $totalPages = ceil($total / $limit);
 
@@ -93,13 +126,21 @@ class Pengeluaran extends BaseController
         try {
             $start = $this->request->getGet('start');
             $end   = $this->request->getGet('end');
+            $year  = $this->request->getGet('year');
             
             $builder = $this->pengeluaranModel
                 ->selectSum('jumlah');
 
+            // Normalize: If Year is present, FORCE usage of its range
+            if (!empty($year)) {
+                 $start = $year . '-01-01';
+                 $end   = $year . '-12-31';
+            }
+
             if (!empty($start) && !empty($end)) {
-                $builder->where('periode >=', $start)
-                        ->where('periode <=', $end);
+                $s = $this->pengeluaranModel->db->escapeString($start);
+                $e = $this->pengeluaranModel->db->escapeString($end);
+                $builder->where("periode BETWEEN '$s' AND '$e'");
             }
 
             $total = $builder->get()->getRow()->jumlah ?? 0;
