@@ -48,7 +48,7 @@
             </div>
         </div>
     </li>
-    
+
     <!-- Divider -->
     <hr class="sidebar-divider">
 
@@ -60,19 +60,19 @@
     </li>
 
     <?php if (session()->get('is_master') || session()->get('role') === 'admin'): ?>
-    <!-- Nav Item - Kelola Pengguna -->
-    <li class="nav-item">
-        <a class="nav-link" href="<?= base_url('dashboard/kelola_pengguna') ?>">
-            <i class="fas fa-fw fa-user-cog"></i>
-            <span>Kelola Pengguna</span></a>
-    </li>
+        <!-- Nav Item - Kelola Pengguna -->
+        <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('dashboard/kelola_pengguna') ?>">
+                <i class="fas fa-fw fa-user-cog"></i>
+                <span>Kelola Pengguna</span></a>
+        </li>
     <?php endif; ?>
 
     <!-- Nav Item - Tables -->
     <li class="nav-item">
         <a class="nav-link" href="<?= base_url('laporan') ?>">
             <i class="fas fa-fw fa-file-pdf"></i>
-            <span>Cetak Laporan</span></a>
+            <span>Rekapitulasi</span></a>
     </li>
 
     <!-- Divider -->
